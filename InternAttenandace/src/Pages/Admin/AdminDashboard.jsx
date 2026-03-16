@@ -478,7 +478,6 @@ function DownloadExcelModal({ interns, shiftSettings, onCancel }) {
       const internMap = {}
       interns.forEach(i => { internMap[i.uid] = i })
 
-      // Group by date
       const byDate = {}
       records.forEach(r => {
         if (!r.date) return
@@ -486,7 +485,7 @@ function DownloadExcelModal({ interns, shiftSettings, onCancel }) {
         byDate[r.date].push(r)
       })
 
-      const dates = Object.keys(byDate).sort((a, b) => b.localeCompare(a)) // newest first
+      const dates = Object.keys(byDate).sort((a, b) => b.localeCompare(a))
       if (dates.length === 0) { setError('No attendance records found in this date range.'); setLoading(false); return }
 
       const XLSX     = await import('https://cdn.sheetjs.com/xlsx-0.20.1/package/xlsx.mjs')
@@ -496,68 +495,49 @@ function DownloadExcelModal({ interns, shiftSettings, onCancel }) {
       const COLS     = ['Name', 'Email', 'Schedule', 'Time In', 'Time Out', 'Duration', 'Status']
 
       dates.forEach(date => {
-        const dayRecs  = byDate[date].sort((a, b) => (a.timeIn?.toDate?.()?.getTime() || 0) - (b.timeIn?.toDate?.()?.getTime() || 0))
+        const dayRecs   = byDate[date].sort((a, b) => (a.timeIn?.toDate?.()?.getTime() || 0) - (b.timeIn?.toDate?.()?.getTime() || 0))
         const dateLabel = new Date(date + 'T00:00:00').toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' })
-        // Sheet name: "Mon, Mar 6" (max 31 chars)
         const sheetName = new Date(date + 'T00:00:00').toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' })
 
-        const aoa    = []
-        const merges = []
-        const styles = {}
-
-        // Date title row
+        const aoa = []; const merges = []; const styles = {}
         aoa.push([`${dateLabel}   (${dayRecs.length} record${dayRecs.length !== 1 ? 's' : ''})`, '', '', '', '', '', ''])
-        merges.push({ s: { r: 0, c: 0 }, e: { r: 0, c: 6 } })
-        styles[0] = 'date-header'
+        merges.push({ s: { r: 0, c: 0 }, e: { r: 0, c: 6 } }); styles[0] = 'date-header'
+        aoa.push(COLS); styles[1] = 'col-header'
 
-        // Column headers
-        aoa.push(COLS)
-        styles[1] = 'col-header'
-
-        // Data rows
         dayRecs.forEach(r => {
           const intern   = internMap[r.uid]
           const status   = !r.timeOut ? 'No Time Out' : r.status === 'late' ? 'Late' : 'Complete'
-          const schedule = (() => {
-            const sc = shiftSettings[r.shift]
-            if (!sc) return shiftMap[r.shift] || r.shift || '—'
-            return `${to12Hour(sc.start)} – ${to12Hour(sc.end)}`
-          })()
-          const rowIdx = aoa.length
+          const sc       = shiftSettings[r.shift]
+          const schedule = sc ? `${to12Hour(sc.start)} – ${to12Hour(sc.end)}` : shiftMap[r.shift] || r.shift || '—'
+          const rowIdx   = aoa.length
           aoa.push([intern?.name || 'Unknown', intern?.email || '—', schedule, fmt(r.timeIn), fmt(r.timeOut), r.duration || '—', status])
           styles[rowIdx] = status === 'No Time Out' ? 'data-warning' : status === 'Late' ? 'data-late' : 'data'
         })
 
-        // Summary row
-        const present  = dayRecs.filter(r => r.timeOut).length
-        const missing  = dayRecs.filter(r => !r.timeOut).length
-        const late     = dayRecs.filter(r => r.status === 'late').length
+        const present = dayRecs.filter(r => r.timeOut).length
+        const missing = dayRecs.filter(r => !r.timeOut).length
+        const late    = dayRecs.filter(r => r.status === 'late').length
         aoa.push([])
         aoa.push([`Total: ${dayRecs.length}`, '', `Present: ${present}`, '', `Missing Time Out: ${missing}`, '', `Late: ${late}`])
         styles[aoa.length - 1] = 'summary'
 
         const ws = XLSX.utils.aoa_to_sheet(aoa)
-
-        // Apply styles
         aoa.forEach((_, rowIdx) => {
-          const type = styles[rowIdx]
-          if (!type) return
+          const type = styles[rowIdx]; if (!type) return
           for (let c = 0; c < 7; c++) {
             const addr = XLSX.utils.encode_cell({ r: rowIdx, c })
             if (!ws[addr]) ws[addr] = { v: '', t: 's' }
             const cell = ws[addr]
-            if (type === 'date-header') cell.s = { font: { bold: true, sz: 12, color: { rgb: 'FFFFFF' }, name: 'Arial' }, fill: { fgColor: { rgb: '0F172A' } } }
-            else if (type === 'col-header') cell.s = { font: { bold: true, sz: 9, color: { rgb: 'A0AEC0' }, name: 'Arial' }, fill: { fgColor: { rgb: '1E293B' } }, alignment: { horizontal: 'center' } }
+            if (type === 'date-header')       cell.s = { font: { bold: true, sz: 12, color: { rgb: 'FFFFFF' }, name: 'Arial' }, fill: { fgColor: { rgb: '0F172A' } } }
+            else if (type === 'col-header')   cell.s = { font: { bold: true, sz: 9, color: { rgb: 'A0AEC0' }, name: 'Arial' }, fill: { fgColor: { rgb: '1E293B' } }, alignment: { horizontal: 'center' } }
             else if (type === 'data-warning') cell.s = { font: { sz: 10, color: { rgb: 'F59E0B' }, name: 'Arial' }, fill: { fgColor: { rgb: '292318' } } }
-            else if (type === 'data-late') cell.s = { font: { sz: 10, color: { rgb: 'EF4444' }, name: 'Arial' } }
-            else if (type === 'summary') cell.s = { font: { bold: true, sz: 9, color: { rgb: '94A3B8' }, name: 'Arial' } }
+            else if (type === 'data-late')    cell.s = { font: { sz: 10, color: { rgb: 'EF4444' }, name: 'Arial' } }
+            else if (type === 'summary')      cell.s = { font: { bold: true, sz: 9, color: { rgb: '94A3B8' }, name: 'Arial' } }
             else cell.s = { font: { sz: 10, name: 'Arial' } }
           }
         })
-
         ws['!merges'] = merges
         ws['!cols']   = [{ wch: 22 }, { wch: 26 }, { wch: 18 }, { wch: 12 }, { wch: 12 }, { wch: 12 }, { wch: 14 }]
-
         XLSX.utils.book_append_sheet(wb, ws, sheetName.slice(0, 31))
       })
 
@@ -603,8 +583,8 @@ function DownloadExcelModal({ interns, shiftSettings, onCancel }) {
 
 // ── Download Single Intern Excel Modal ──
 function DownloadInternExcelModal({ intern, logs, onCancel }) {
-  const [loading, setLoading] = useState(false)
-  const [error,   setError]   = useState('')
+  const [loading,  setLoading]  = useState(false)
+  const [error,    setError]    = useState('')
 
   const handleDownload = async () => {
     if (logs.length === 0) { setError('No attendance records found for this intern.'); return }
@@ -861,7 +841,7 @@ function ResetInternPasswordModal({ intern, onClose }) {
             <div className="modal-title">🔑 Reset Password</div>
             <div className="modal-sub">Send a password reset link to this intern's email.</div>
             <div className="modal-form">
-              <div style={{ background: 'var(--surface2)', border: '1px solid var(--border)', borderRadius: 8, padding: '12px 14px', fontSize: '0.8rem', lineHeight: 1.6 }}>
+              <div style={{ background: 'var(--bg)', border: '1px solid var(--border)', borderRadius: 8, padding: '12px 14px', fontSize: '0.8rem', lineHeight: 1.6 }}>
                 <div style={{ fontWeight: 600, marginBottom: 4 }}>{intern.name}</div>
                 <div style={{ color: 'var(--muted)' }}>{intern.email}</div>
               </div>
