@@ -30,20 +30,20 @@ function monthLabel(ym) {
     .toLocaleDateString('en-US', { month: 'long', year: 'numeric' })
 }
 function formatLog(log) {
-  const timeInStr  = log.timeIn?.toDate  ? log.timeIn.toDate().toLocaleTimeString('en-US',  { hour: '2-digit', minute: '2-digit', hour12: true }) : '—'
+  const timeInStr = log.timeIn?.toDate ? log.timeIn.toDate().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true }) : '—'
   const timeOutStr = log.timeOut?.toDate ? log.timeOut.toDate().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true }) : '—'
-  const dateStr    = log.date ? new Date(log.date + 'T00:00:00').toLocaleDateString('en-US', { month: 'short', day: 'numeric', weekday: 'short' }) : '—'
+  const dateStr = log.date ? new Date(log.date + 'T00:00:00').toLocaleDateString('en-US', { month: 'short', day: 'numeric', weekday: 'short' }) : '—'
   return { date: dateStr, timeIn: timeInStr, timeOut: timeOutStr, duration: log.duration || '—' }
 }
 
-const STATUS_LABELS   = { pending: 'Pending', 'in-progress': 'In Progress', done: 'Done' }
+const STATUS_LABELS = { pending: 'Pending', 'in-progress': 'In Progress', done: 'Done' }
 const PRIORITY_LABELS = { high: '↑ High', medium: '→ Medium', low: '↓ Low' }
 
 function to12Hour(time24) {
   if (!time24) return ''
   const [h, m] = time24.split(':').map(Number)
   const ampm = h >= 12 ? 'PM' : 'AM'
-  const h12  = h % 12 || 12
+  const h12 = h % 12 || 12
   return `${h12}:${m.toString().padStart(2, '0')} ${ampm}`
 }
 
@@ -71,15 +71,15 @@ function generatePassword() {
 
 // ── Add Intern Modal ──
 function AddInternModal({ onAdd, onCancel, shiftSettings }) {
-  const [form, setForm]       = useState({
+  const [form, setForm] = useState({
     firstName: '', lastName: '', email: '',
     password: generatePassword(),
     hoursRequired: '600', shift: 'morning'
   })
   const [loading, setLoading] = useState(false)
-  const [error, setError]     = useState('')
+  const [error, setError] = useState('')
   const [created, setCreated] = useState(null) // holds { name, email, password } after success
-  const [copied, setCopied]   = useState(false)
+  const [copied, setCopied] = useState(false)
 
   const handleChange = e => {
     const { name, value } = e.target
@@ -174,7 +174,7 @@ function AddInternModal({ onAdd, onCancel, shiftSettings }) {
 
 // ── Assign SOLO Task Modal ──
 function AssignSoloModal({ interns, onAssign, onCancel }) {
-  const [form, setForm]       = useState({ internUid: interns[0]?.uid || '', title: '', desc: '', priority: 'medium' })
+  const [form, setForm] = useState({ internUid: interns[0]?.uid || '', title: '', desc: '', priority: 'medium' })
   const [loading, setLoading] = useState(false)
   const handleChange = e => setForm(p => ({ ...p, [e.target.name]: e.target.value }))
   const handleSubmit = async (e) => {
@@ -211,13 +211,13 @@ function AssignSoloModal({ interns, onAssign, onCancel }) {
 
 // ── Assign GROUP Task Modal ──
 function AssignGroupModal({ interns, onAssign, onCancel }) {
-  const [title, setTitle]         = useState('')
-  const [desc, setDesc]           = useState('')
-  const [priority, setPriority]   = useState('medium')
+  const [title, setTitle] = useState('')
+  const [desc, setDesc] = useState('')
+  const [priority, setPriority] = useState('medium')
   const [leaderUid, setLeaderUid] = useState(interns[0]?.uid || '')
   const [memberUids, setMemberUids] = useState(interns[0] ? [interns[0].uid] : [])
-  const [loading, setLoading]     = useState(false)
-  const [error, setError]         = useState('')
+  const [loading, setLoading] = useState(false)
+  const [error, setError] = useState('')
 
   const toggleMember = (uid) => {
     setMemberUids(prev =>
@@ -308,7 +308,7 @@ function buildDayGroupedSheetWithTitle(XLSX, titleAoa, monthRecords, includeName
   monthRecords.forEach(r => { if (!byDate[r.date]) byDate[r.date] = []; byDate[r.date].push(r) })
   const sortedDates = Object.keys(byDate).sort()
 
-  const aoa    = []
+  const aoa = []
   const merges = []
   const styles = {}
 
@@ -325,8 +325,8 @@ function buildDayGroupedSheetWithTitle(XLSX, titleAoa, monthRecords, includeName
   // Day groups
   sortedDates.forEach((date, di) => {
     if (di > 0) aoa.push(Array(numCols).fill(''))
-    const dateLabel  = new Date(date + 'T00:00:00').toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' })
-    const dayRecs    = byDate[date]
+    const dateLabel = new Date(date + 'T00:00:00').toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' })
+    const dayRecs = byDate[date]
     const dateRowIdx = aoa.length
     aoa.push([`${dateLabel}   (${dayRecs.length} record${dayRecs.length !== 1 ? 's' : ''})`, ...Array(numCols - 1).fill('')])
     merges.push({ s: { r: dateRowIdx, c: 0 }, e: { r: dateRowIdx, c: numCols - 1 } })
@@ -338,8 +338,8 @@ function buildDayGroupedSheetWithTitle(XLSX, titleAoa, monthRecords, includeName
 
     dayRecs.sort((a, b) => (a.timeIn?.toDate?.()?.getTime() || 0) - (b.timeIn?.toDate?.()?.getTime() || 0))
     dayRecs.forEach(r => {
-      const status     = !r.timeOut ? 'No Time Out' : r.status === 'late' ? 'Late' : 'Complete'
-      const row        = includeNameCol
+      const status = !r.timeOut ? 'No Time Out' : r.status === 'late' ? 'Late' : 'Complete'
+      const row = includeNameCol
         ? [r._internName || '—', r._internEmail || '—', shiftMap[r.shift] || r.shift || '—', fmt(r.timeIn), fmt(r.timeOut), r.duration || '—', status]
         : [shiftMap[r.shift] || r.shift || '—', fmt(r.timeIn), fmt(r.timeOut), r.duration || '—', status]
       const dataRowIdx = aoa.length
@@ -356,17 +356,17 @@ function buildDayGroupedSheetWithTitle(XLSX, titleAoa, monthRecords, includeName
       const addr = XLSX.utils.encode_cell({ r: rowIdx, c })
       if (!ws[addr]) ws[addr] = { v: '', t: 's' }
       const cell = ws[addr]
-      if (type === 'title-main')    cell.s = { font: { bold: true, sz: 13, name: 'Arial', color: { rgb: 'FFFFFF' } }, fill: { fgColor: { rgb: '0D1117' } } }
+      if (type === 'title-main') cell.s = { font: { bold: true, sz: 13, name: 'Arial', color: { rgb: 'FFFFFF' } }, fill: { fgColor: { rgb: '0D1117' } } }
       else if (type === 'title-sub') cell.s = { font: { sz: 10, name: 'Arial', color: { rgb: '94A3B8' } }, fill: { fgColor: { rgb: '0D1117' } } }
       else if (type === 'date-header') cell.s = { font: { bold: true, sz: 11, name: 'Arial', color: { rgb: 'FFFFFF' } }, fill: { fgColor: { rgb: '0F172A' } } }
-      else if (type === 'col-header')  cell.s = { font: { bold: true, sz: 9,  name: 'Arial', color: { rgb: 'A0AEC0' } }, fill: { fgColor: { rgb: '1E293B' } }, alignment: { horizontal: 'center' } }
+      else if (type === 'col-header') cell.s = { font: { bold: true, sz: 9, name: 'Arial', color: { rgb: 'A0AEC0' } }, fill: { fgColor: { rgb: '1E293B' } }, alignment: { horizontal: 'center' } }
       else if (type === 'data-warning') cell.s = { font: { sz: 10, color: { rgb: 'F59E0B' }, name: 'Arial' }, fill: { fgColor: { rgb: '292318' } } }
-      else if (type === 'data-late')    cell.s = { font: { sz: 10, color: { rgb: 'EF4444' }, name: 'Arial' } }
-      else                              cell.s = { font: { sz: 10, name: 'Arial' } }
+      else if (type === 'data-late') cell.s = { font: { sz: 10, color: { rgb: 'EF4444' }, name: 'Arial' } }
+      else cell.s = { font: { sz: 10, name: 'Arial' } }
     }
   })
   ws['!merges'] = merges
-  ws['!cols']   = includeNameCol
+  ws['!cols'] = includeNameCol
     ? [{ wch: 22 }, { wch: 26 }, { wch: 10 }, { wch: 12 }, { wch: 12 }, { wch: 12 }, { wch: 14 }]
     : [{ wch: 10 }, { wch: 12 }, { wch: 12 }, { wch: 12 }, { wch: 14 }]
   return ws
@@ -391,7 +391,7 @@ function buildDayGroupedSheet(XLSX, monthRecords, internMap, includeNameCol = tr
     : ['Shift', 'Time In', 'Time Out', 'Duration', 'Status']
   const numCols = COLS.length
 
-  const aoa    = []   // all rows
+  const aoa = []   // all rows
   const merges = []   // merge ranges for date header cells
   const styles = {}   // row index → style type: 'date-header' | 'col-header' | 'data' | 'summary'
 
@@ -403,7 +403,7 @@ function buildDayGroupedSheet(XLSX, monthRecords, internMap, includeNameCol = tr
     const dateLabel = new Date(date + 'T00:00:00').toLocaleDateString('en-US', {
       weekday: 'long', month: 'long', day: 'numeric', year: 'numeric'
     })
-    const dayRecs   = byDate[date]
+    const dayRecs = byDate[date]
     const dateRowIdx = aoa.length
     aoa.push([`${dateLabel}   (${dayRecs.length} record${dayRecs.length !== 1 ? 's' : ''})`, ...Array(numCols - 1).fill('')])
     merges.push({ s: { r: dateRowIdx, c: 0 }, e: { r: dateRowIdx, c: numCols - 1 } })
@@ -455,7 +455,7 @@ function buildDayGroupedSheet(XLSX, monthRecords, internMap, includeNameCol = tr
   })
 
   ws['!merges'] = merges
-  ws['!cols']   = includeNameCol
+  ws['!cols'] = includeNameCol
     ? [{ wch: 22 }, { wch: 26 }, { wch: 10 }, { wch: 12 }, { wch: 12 }, { wch: 12 }, { wch: 14 }]
     : [{ wch: 10 }, { wch: 12 }, { wch: 12 }, { wch: 12 }, { wch: 14 }]
 
@@ -463,18 +463,18 @@ function buildDayGroupedSheet(XLSX, monthRecords, internMap, includeNameCol = tr
 }
 
 function DownloadExcelModal({ interns, shiftSettings, onCancel }) {
-  const today     = new Date().toISOString().split('T')[0]
-  const monthAgo  = new Date(); monthAgo.setMonth(monthAgo.getMonth() - 1)
+  const today = new Date().toISOString().split('T')[0]
+  const monthAgo = new Date(); monthAgo.setMonth(monthAgo.getMonth() - 1)
   const [dateFrom, setDateFrom] = useState(monthAgo.toISOString().split('T')[0])
-  const [dateTo,   setDateTo]   = useState(today)
-  const [loading,  setLoading]  = useState(false)
-  const [error,    setError]    = useState('')
+  const [dateTo, setDateTo] = useState(today)
+  const [loading, setLoading] = useState(false)
+  const [error, setError] = useState('')
 
   const handleDownload = async () => {
     if (dateFrom > dateTo) { setError('Start date must be before end date.'); return }
     setLoading(true); setError('')
     try {
-      const records   = await getAllAttendanceInRange(dateFrom, dateTo)
+      const records = await getAllAttendanceInRange(dateFrom, dateTo)
       const internMap = {}
       interns.forEach(i => { internMap[i.uid] = i })
 
@@ -488,14 +488,14 @@ function DownloadExcelModal({ interns, shiftSettings, onCancel }) {
       const dates = Object.keys(byDate).sort((a, b) => b.localeCompare(a))
       if (dates.length === 0) { setError('No attendance records found in this date range.'); setLoading(false); return }
 
-      const XLSX     = await import('https://cdn.sheetjs.com/xlsx-0.20.1/package/xlsx.mjs')
-      const wb       = XLSX.utils.book_new()
-      const fmt      = ts => ts?.toDate ? ts.toDate().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true }) : '—'
+      const XLSX = await import('https://cdn.sheetjs.com/xlsx-0.20.1/package/xlsx.mjs')
+      const wb = XLSX.utils.book_new()
+      const fmt = ts => ts?.toDate ? ts.toDate().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true }) : '—'
       const shiftMap = { morning: 'Morning', mid: 'Mid', gy: 'GY' }
-      const COLS     = ['Name', 'Email', 'Schedule', 'Time In', 'Time Out', 'Duration', 'Status']
+      const COLS = ['Name', 'Email', 'Schedule', 'Time In', 'Time Out', 'Duration', 'Status']
 
       dates.forEach(date => {
-        const dayRecs   = byDate[date].sort((a, b) => (a.timeIn?.toDate?.()?.getTime() || 0) - (b.timeIn?.toDate?.()?.getTime() || 0))
+        const dayRecs = byDate[date].sort((a, b) => (a.timeIn?.toDate?.()?.getTime() || 0) - (b.timeIn?.toDate?.()?.getTime() || 0))
         const dateLabel = new Date(date + 'T00:00:00').toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' })
         const sheetName = new Date(date + 'T00:00:00').toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' })
 
@@ -505,18 +505,18 @@ function DownloadExcelModal({ interns, shiftSettings, onCancel }) {
         aoa.push(COLS); styles[1] = 'col-header'
 
         dayRecs.forEach(r => {
-          const intern   = internMap[r.uid]
-          const status   = !r.timeOut ? 'No Time Out' : r.status === 'late' ? 'Late' : 'Complete'
-          const sc       = shiftSettings[r.shift]
+          const intern = internMap[r.uid]
+          const status = !r.timeOut ? 'No Time Out' : r.status === 'late' ? 'Late' : 'Complete'
+          const sc = shiftSettings[r.shift]
           const schedule = sc ? `${to12Hour(sc.start)} – ${to12Hour(sc.end)}` : shiftMap[r.shift] || r.shift || '—'
-          const rowIdx   = aoa.length
+          const rowIdx = aoa.length
           aoa.push([intern?.name || 'Unknown', intern?.email || '—', schedule, fmt(r.timeIn), fmt(r.timeOut), r.duration || '—', status])
           styles[rowIdx] = status === 'No Time Out' ? 'data-warning' : status === 'Late' ? 'data-late' : 'data'
         })
 
         const present = dayRecs.filter(r => r.timeOut).length
         const missing = dayRecs.filter(r => !r.timeOut).length
-        const late    = dayRecs.filter(r => r.status === 'late').length
+        const late = dayRecs.filter(r => r.status === 'late').length
         aoa.push([])
         aoa.push([`Total: ${dayRecs.length}`, '', `Present: ${present}`, '', `Missing Time Out: ${missing}`, '', `Late: ${late}`])
         styles[aoa.length - 1] = 'summary'
@@ -528,20 +528,20 @@ function DownloadExcelModal({ interns, shiftSettings, onCancel }) {
             const addr = XLSX.utils.encode_cell({ r: rowIdx, c })
             if (!ws[addr]) ws[addr] = { v: '', t: 's' }
             const cell = ws[addr]
-            if (type === 'date-header')       cell.s = { font: { bold: true, sz: 12, color: { rgb: 'FFFFFF' }, name: 'Arial' }, fill: { fgColor: { rgb: '0F172A' } } }
-            else if (type === 'col-header')   cell.s = { font: { bold: true, sz: 9, color: { rgb: 'A0AEC0' }, name: 'Arial' }, fill: { fgColor: { rgb: '1E293B' } }, alignment: { horizontal: 'center' } }
+            if (type === 'date-header') cell.s = { font: { bold: true, sz: 12, color: { rgb: 'FFFFFF' }, name: 'Arial' }, fill: { fgColor: { rgb: '0F172A' } } }
+            else if (type === 'col-header') cell.s = { font: { bold: true, sz: 9, color: { rgb: 'A0AEC0' }, name: 'Arial' }, fill: { fgColor: { rgb: '1E293B' } }, alignment: { horizontal: 'center' } }
             else if (type === 'data-warning') cell.s = { font: { sz: 10, color: { rgb: 'F59E0B' }, name: 'Arial' }, fill: { fgColor: { rgb: '292318' } } }
-            else if (type === 'data-late')    cell.s = { font: { sz: 10, color: { rgb: 'EF4444' }, name: 'Arial' } }
-            else if (type === 'summary')      cell.s = { font: { bold: true, sz: 9, color: { rgb: '94A3B8' }, name: 'Arial' } }
+            else if (type === 'data-late') cell.s = { font: { sz: 10, color: { rgb: 'EF4444' }, name: 'Arial' } }
+            else if (type === 'summary') cell.s = { font: { bold: true, sz: 9, color: { rgb: '94A3B8' }, name: 'Arial' } }
             else cell.s = { font: { sz: 10, name: 'Arial' } }
           }
         })
         ws['!merges'] = merges
-        ws['!cols']   = [{ wch: 22 }, { wch: 26 }, { wch: 18 }, { wch: 12 }, { wch: 12 }, { wch: 12 }, { wch: 14 }]
+        ws['!cols'] = [{ wch: 22 }, { wch: 26 }, { wch: 18 }, { wch: 12 }, { wch: 12 }, { wch: 12 }, { wch: 14 }]
         XLSX.utils.book_append_sheet(wb, ws, sheetName.slice(0, 31))
       })
 
-      XLSX.writeFile(wb, `InfocomOJT_Attendance_${dateFrom}_to_${dateTo}.xlsx`)
+      XLSX.writeFile(wb, `OJTracker_Attendance_${dateFrom}_to_${dateTo}.xlsx`)
       onCancel()
     } catch (e) {
       console.error(e)
@@ -583,15 +583,15 @@ function DownloadExcelModal({ interns, shiftSettings, onCancel }) {
 
 // ── Download Single Intern Excel Modal ──
 function DownloadInternExcelModal({ intern, logs, onCancel }) {
-  const [loading,  setLoading]  = useState(false)
-  const [error,    setError]    = useState('')
+  const [loading, setLoading] = useState(false)
+  const [error, setError] = useState('')
 
   const handleDownload = async () => {
     if (logs.length === 0) { setError('No attendance records found for this intern.'); return }
     setLoading(true); setError('')
     try {
-      const XLSX     = await import('https://cdn.sheetjs.com/xlsx-0.20.1/package/xlsx.mjs')
-      const wb       = XLSX.utils.book_new()
+      const XLSX = await import('https://cdn.sheetjs.com/xlsx-0.20.1/package/xlsx.mjs')
+      const wb = XLSX.utils.book_new()
       const shiftMap = { morning: 'Morning', mid: 'Mid', gy: 'GY' }
 
       // Group by month
@@ -605,7 +605,7 @@ function DownloadInternExcelModal({ intern, logs, onCancel }) {
 
       Object.keys(byMonth).sort().forEach(month => {
         const [year, mon] = month.split('-')
-        const sheetName   = new Date(parseInt(year), parseInt(mon) - 1, 1)
+        const sheetName = new Date(parseInt(year), parseInt(mon) - 1, 1)
           .toLocaleDateString('en-US', { month: 'long', year: 'numeric' })
 
         // Use shared helper — no name/email col since it's a single intern sheet
@@ -644,7 +644,7 @@ function DownloadInternExcelModal({ intern, logs, onCancel }) {
         <div style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid var(--border)', borderRadius: 8, padding: '14px 16px', display: 'flex', flexDirection: 'column', gap: 10 }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
             <div className="intern-avatar" style={{ width: 36, height: 36, fontSize: '0.75rem', flexShrink: 0, ...avatarStyle(intern.avatarColor) }}>
-              {intern.name?.split(' ').map(n => n[0]).join('').slice(0,2).toUpperCase()}
+              {intern.name?.split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase()}
             </div>
             <div>
               <div style={{ fontSize: '0.85rem', fontWeight: 700 }}>{intern.name}</div>
@@ -679,10 +679,10 @@ function EditAttendanceModal({ log, onSave, onCancel }) {
     ? date.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: false })
     : ''
 
-  const [timeIn,  setTimeIn]  = useState(log.timeIn?.toDate  ? fmt24(log.timeIn.toDate())  : '')
+  const [timeIn, setTimeIn] = useState(log.timeIn?.toDate ? fmt24(log.timeIn.toDate()) : '')
   const [timeOut, setTimeOut] = useState(log.timeOut?.toDate ? fmt24(log.timeOut.toDate()) : '')
-  const [saving,  setSaving]  = useState(false)
-  const [error,   setError]   = useState('')
+  const [saving, setSaving] = useState(false)
+  const [error, setError] = useState('')
 
   const handleSave = async () => {
     if (!timeIn) { setError('Time in is required.'); return }
@@ -721,8 +721,8 @@ function EditAttendanceModal({ log, onSave, onCancel }) {
 // ── Settings Tab ──
 function SettingsTab({ shiftSettings, onSave }) {
   const [settings, setSettings] = useState(JSON.parse(JSON.stringify(shiftSettings)))
-  const [saved, setSaved]       = useState(false)
-  const [saving, setSaving]     = useState(false)
+  const [saved, setSaved] = useState(false)
+  const [saving, setSaving] = useState(false)
 
   const handleChange = (shift, field, value) => {
     setSettings(prev => ({
@@ -810,8 +810,8 @@ function SettingsTab({ shiftSettings, onSave }) {
 // ── Reset Intern Password Modal ──
 function ResetInternPasswordModal({ intern, onClose }) {
   const [loading, setLoading] = useState(false)
-  const [done,    setDone]    = useState(false)
-  const [error,   setError]   = useState('')
+  const [done, setDone] = useState(false)
+  const [error, setError] = useState('')
 
   const handleReset = async () => {
     setLoading(true); setError('')
@@ -866,14 +866,14 @@ function ResetInternPasswordModal({ intern, onClose }) {
 // ── Change Password Modal (Admin) ──
 function AdminChangePwModal({ onClose }) {
   const [currentPw, setCurrentPw] = useState('')
-  const [newPw,     setNewPw]     = useState('')
+  const [newPw, setNewPw] = useState('')
   const [confirmPw, setConfirmPw] = useState('')
-  const [loading,   setLoading]   = useState(false)
-  const [error,     setError]     = useState('')
-  const [success,   setSuccess]   = useState(false)
+  const [loading, setLoading] = useState(false)
+  const [error, setError] = useState('')
+  const [success, setSuccess] = useState(false)
 
   const handleSubmit = async () => {
-    if (newPw.length < 6)    { setError('New password must be at least 6 characters.'); return }
+    if (newPw.length < 6) { setError('New password must be at least 6 characters.'); return }
     if (newPw !== confirmPw) { setError('New passwords do not match.'); return }
     if (newPw === currentPw) { setError('New password must be different from current.'); return }
     setLoading(true); setError('')
@@ -933,32 +933,32 @@ function AdminChangePwModal({ onClose }) {
 
 // ── Main Component ──
 export default function AdminDashboard({ user, onLogout }) {
-  const [tab, setTab]             = useState('interns')
-  const [taskTab, setTaskTab]     = useState('solo')
-  const [interns, setInterns]     = useState([])
-  const [tasks, setTasks]         = useState([])
-  const [modal, setModal]         = useState(null)
-  const [showTheme, setShowTheme]             = useState(false)
-  const [showChangePw, setShowChangePw]       = useState(false)
+  const [tab, setTab] = useState('interns')
+  const [taskTab, setTaskTab] = useState('solo')
+  const [interns, setInterns] = useState([])
+  const [tasks, setTasks] = useState([])
+  const [modal, setModal] = useState(null)
+  const [showTheme, setShowTheme] = useState(false)
+  const [showChangePw, setShowChangePw] = useState(false)
   const [resetPasswordIntern, setResetPasswordIntern] = useState(null)
-  const [selectedIntern, setSelectedIntern]       = useState(null)
-  const [selectedTask, setSelectedTask]           = useState(null)
+  const [selectedIntern, setSelectedIntern] = useState(null)
+  const [selectedTask, setSelectedTask] = useState(null)
   const [viewingAttendance, setViewingAttendance] = useState(null)
-  const [attendanceLogs, setAttendanceLogs]       = useState([])
-  const [loadingData, setLoadingData]             = useState(true)
-  const [todayAttendance, setTodayAttendance]     = useState([])
-  const [selectedMonth, setSelectedMonth]         = useState('all')
-  const [hoveredTaskId, setHoveredTaskId]         = useState(null)
-  const [expandedTaskId, setExpandedTaskId]       = useState(null)
+  const [attendanceLogs, setAttendanceLogs] = useState([])
+  const [loadingData, setLoadingData] = useState(true)
+  const [todayAttendance, setTodayAttendance] = useState([])
+  const [selectedMonth, setSelectedMonth] = useState('all')
+  const [hoveredTaskId, setHoveredTaskId] = useState(null)
+  const [expandedTaskId, setExpandedTaskId] = useState(null)
   const [internShiftFilter, setInternShiftFilter] = useState('all')
-  const [editingLog, setEditingLog]               = useState(null)
-  const [allLogs, setAllLogs]                     = useState([])
-  const [allLogsLoading, setAllLogsLoading]       = useState(false)
-  const [allLogsMonth, setAllLogsMonth]           = useState('all') // { log, internUid }
-  const [shiftSettings, setShiftSettings]         = useState({
+  const [editingLog, setEditingLog] = useState(null)
+  const [allLogs, setAllLogs] = useState([])
+  const [allLogsLoading, setAllLogsLoading] = useState(false)
+  const [allLogsMonth, setAllLogsMonth] = useState('all') // { log, internUid }
+  const [shiftSettings, setShiftSettings] = useState({
     morning: { label: 'Morning', start: '07:00', end: '15:00', lateAfter: '07:00' },
-    mid:     { label: 'Mid',     start: '13:00', end: '22:00', lateAfter: '13:00' },
-    gy:      { label: 'GY',      start: '22:00', end: '07:00', lateAfter: '22:00' },
+    mid: { label: 'Mid', start: '13:00', end: '22:00', lateAfter: '13:00' },
+    gy: { label: 'GY', start: '22:00', end: '07:00', lateAfter: '22:00' },
   })
 
   useEffect(() => {
@@ -1024,7 +1024,7 @@ export default function AdminDashboard({ user, onLogout }) {
       d.setHours(h, m, 0, 0)
       return d
     }
-    const timeInDate  = toDate(timeInStr)
+    const timeInDate = toDate(timeInStr)
     const timeOutDate = timeOutStr ? toDate(timeOutStr) : null
     // If timeout is before timein (crosses midnight), add a day
     if (timeOutDate && timeOutDate < timeInDate) timeOutDate.setDate(timeOutDate.getDate() + 1)
@@ -1036,13 +1036,13 @@ export default function AdminDashboard({ user, onLogout }) {
   const handleLogout = async () => { await logoutUser(); onLogout() }
 
   const presentCount = todayAttendance.filter(a => a.timeIn && !a.timeOut && interns.find(i => i.uid === a.uid)).length
-  const soloTasks    = tasks.filter(t => t.type !== 'group')
-  const groupTasks   = tasks.filter(t => t.type === 'group')
+  const soloTasks = tasks.filter(t => t.type !== 'group')
+  const groupTasks = tasks.filter(t => t.type === 'group')
 
   return (
     <div className="admin-dashboard">
-      {modal === 'add'          && <AddInternModal onAdd={handleAddIntern} onCancel={() => setModal(null)} shiftSettings={shiftSettings} />}
-      {modal === 'assign-solo'  && <AssignSoloModal  interns={interns} onAssign={handleAssignSolo}  onCancel={() => setModal(null)} />}
+      {modal === 'add' && <AddInternModal onAdd={handleAddIntern} onCancel={() => setModal(null)} shiftSettings={shiftSettings} />}
+      {modal === 'assign-solo' && <AssignSoloModal interns={interns} onAssign={handleAssignSolo} onCancel={() => setModal(null)} />}
       {modal === 'assign-group' && <AssignGroupModal interns={interns} onAssign={handleAssignGroup} onCancel={() => setModal(null)} />}
       {modal === 'confirm-remove' && <ConfirmModal name={selectedIntern?.name} onConfirm={handleRemoveIntern} onCancel={() => setModal(null)} />}
       {modal === 'confirm-delete-task' && (
@@ -1066,43 +1066,46 @@ export default function AdminDashboard({ user, onLogout }) {
 
       <header className="admin-topbar">
         <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-          <div className="admin-topbar-logo">Infocom<span>OJT</span></div>
+          <div className="admin-topbar-logo">OJT<span>racker</span></div>
           <span className="admin-role-badge">Admin</span>
         </div>
         <div className="admin-topbar-right">
-          <span style={{ fontSize: '0.75rem', color: 'var(--muted)' }}>{user?.name || 'Admin'}</span>
-          <button className="btn-logout" style={{ background: 'rgba(255,255,255,0.05)', color: 'var(--muted)', borderColor: 'var(--border)' }} onClick={() => setShowChangePw(true)}>🔑 Password</button>
-          <button className="btn-logout" style={{ background: 'rgba(255,255,255,0.05)', color: 'var(--muted)', borderColor: 'var(--border)' }} onClick={() => setShowTheme(true)}>🎨 Theme</button>
-          <button className="btn-logout" onClick={handleLogout}>⎋ Logout</button>
+          <span className="admin-topbar-user">{user?.name || 'Admin'}</span>
+          <button className="btn-text" onClick={() => setShowChangePw(true)}>Password</button>
+          <button className="btn-text" onClick={() => setShowTheme(true)}>Theme</button>
+          <button className="btn-logout" onClick={handleLogout}>Log out</button>
         </div>
       </header>
 
       <div className="admin-body">
-        {/* Stats */}
-        <div className="admin-stats">
-          <div className="admin-stat-card"><div className="admin-stat-label">Total Interns</div><div className="admin-stat-value blue">{interns.length}</div></div>
+        {/* Metrics ledger strip */}
+        <div className="admin-metrics">
+          <div className="admin-metric">
+            <div className="admin-metric-value">{interns.length}</div>
+            <div className="admin-metric-label">Total interns</div>
+          </div>
 
           {/* Present Now — hoverable */}
-          <div className="admin-stat-card present-now-card">
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-              <div className="admin-stat-label">Present Now</div>
+          <div className="admin-metric present-now-card">
+            <div className="admin-metric-value accent-present">
+              {presentCount}
               <button
                 className="present-refresh-btn"
                 onClick={async (e) => { e.stopPropagation(); setTodayAttendance(await getTodayAttendance()) }}
                 title="Refresh"
               >↺</button>
             </div>
-            <div className="admin-stat-value green">{presentCount}</div>
+            <div className="admin-metric-label">Present now</div>
             {/* Tooltip */}
             <div className="present-tooltip">
-              <div className="present-tooltip-title">Currently In Office</div>
+              <div className="present-tooltip-title">Currently in office</div>
               {presentCount === 0 ? (
                 <div className="present-tooltip-empty">No one is timed in right now.</div>
               ) : (
                 todayAttendance
                   .filter(a => a.timeIn && !a.timeOut && interns.find(i => i.uid === a.uid))
                   .map(a => {
-                    const intern  = interns.find(i => i.uid === a.uid)
+                    const intern = interns.find(i => i.uid === a.uid)
                     const timeInStr = a.timeIn?.toDate
                       ? a.timeIn.toDate().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true })
                       : '—'
@@ -1111,7 +1114,7 @@ export default function AdminDashboard({ user, onLogout }) {
                         <div className="present-tooltip-avatar" style={avatarStyle(intern?.avatarColor)}>{getInitials(intern?.name)}</div>
                         <div>
                           <div className="present-tooltip-name">{intern?.name || 'Unknown'}</div>
-                          <div className="present-tooltip-time">↓ Timed in at {timeInStr}</div>
+                          <div className="present-tooltip-time">Timed in at {timeInStr}</div>
                         </div>
                       </div>
                     )
@@ -1120,12 +1123,15 @@ export default function AdminDashboard({ user, onLogout }) {
             </div>
           </div>
 
-          <div className="admin-stat-card"><div className="admin-stat-label">Active Tasks</div><div className="admin-stat-value muted">{tasks.filter(t => t.status !== 'done').length}</div></div>
+          <div className="admin-metric">
+            <div className="admin-metric-value">{tasks.filter(t => t.status !== 'done').length}</div>
+            <div className="admin-metric-label">Active tasks</div>
+          </div>
         </div>
 
         {/* Main Tabs */}
         <div className="admin-tabs">
-          {[['interns','Interns'],['tasks','Tasks'],['attendance','Attendance'],['settings','Schedule']].map(([key, label]) => (
+          {[['interns', 'Interns'], ['tasks', 'Tasks'], ['attendance', 'Attendance'], ['settings', 'Schedule']].map(([key, label]) => (
             <button key={key} className={`admin-tab ${tab === key ? 'active' : ''}`}
               onClick={() => { setTab(key); setViewingAttendance(null) }}>{label}</button>
           ))}
@@ -1143,7 +1149,7 @@ export default function AdminDashboard({ user, onLogout }) {
                   <div style={{ display: 'flex', alignItems: 'center', gap: '10px', flexWrap: 'wrap' }}>
                     {/* Shift filter */}
                     <div className="task-subtabs">
-                      {[['all','All'], ['morning','🌅 Morning'], ['mid','🌤️ Mid'], ['gy','🌙 GY']].map(([val, label]) => (
+                      {[['all', 'All'], ['morning', '🌅 Morning'], ['mid', '🌤️ Mid'], ['gy', '🌙 GY']].map(([val, label]) => (
                         <button
                           key={val}
                           className={`task-subtab ${internShiftFilter === val ? 'active' : ''}`}
@@ -1181,35 +1187,35 @@ export default function AdminDashboard({ user, onLogout }) {
                       return (a.name || '').localeCompare(b.name || '')
                     })
                     .map(intern => {
-                    const internTasks = tasks.filter(t =>
-                      (t.type !== 'group' && t.internUid === intern.uid) ||
-                      (t.type === 'group' && t.memberUids?.includes(intern.uid))
-                    )
-                    const done = internTasks.filter(t => t.status === 'done').length
-                    return (
-                      <div className="intern-row" key={intern.uid} style={{ gridTemplateColumns: '2fr 1.4fr 1fr 1fr 1fr' }}>
-                        <div className="intern-name-cell">
-                          <div className="intern-avatar" style={avatarStyle(intern.avatarColor)}>{getInitials(intern.name)}</div>
+                      const internTasks = tasks.filter(t =>
+                        (t.type !== 'group' && t.internUid === intern.uid) ||
+                        (t.type === 'group' && t.memberUids?.includes(intern.uid))
+                      )
+                      const done = internTasks.filter(t => t.status === 'done').length
+                      return (
+                        <div className="intern-row" key={intern.uid} style={{ gridTemplateColumns: '2fr 1.4fr 1fr 1fr 1fr' }}>
+                          <div className="intern-name-cell">
+                            <div className="intern-avatar" style={avatarStyle(intern.avatarColor)}>{getInitials(intern.name)}</div>
+                            <div>
+                              <div className="intern-name">{intern.name}</div>
+                              <div className="intern-email">{intern.email}</div>
+                            </div>
+                          </div>
                           <div>
-                            <div className="intern-name">{intern.name}</div>
-                            <div className="intern-email">{intern.email}</div>
+                            <span className="intern-schedule-badge">
+                              🕐 {to12Hour(shiftSettings[intern.shift]?.start || '07:00')} – {to12Hour(shiftSettings[intern.shift]?.end || '15:00')}
+                            </span>
+                          </div>
+                          <div className="intern-td">{Math.floor(intern.hoursRendered || 0)} hrs</div>
+                          <div className="intern-td">{done}/{internTasks.length} done</div>
+                          <div className="intern-actions">
+                            <button className="btn-icon" onClick={() => { setViewingAttendance(intern); setTab('attendance') }}>◷ Attendance</button>
+                            <button className="btn-icon" title="Reset Password" onClick={() => setResetPasswordIntern(intern)}>🔑</button>
+                            <button className="btn-icon danger" onClick={() => { setSelectedIntern(intern); setModal('confirm-remove') }}>✕</button>
                           </div>
                         </div>
-                        <div>
-                          <span className="intern-schedule-badge">
-                            🕐 {to12Hour(shiftSettings[intern.shift]?.start || '07:00')} – {to12Hour(shiftSettings[intern.shift]?.end || '15:00')}
-                          </span>
-                        </div>
-                        <div className="intern-td">{Math.floor(intern.hoursRendered || 0)} hrs</div>
-                        <div className="intern-td">{done}/{internTasks.length} done</div>
-                        <div className="intern-actions">
-                          <button className="btn-icon" onClick={() => { setViewingAttendance(intern); setTab('attendance') }}>◷ Attendance</button>
-                          <button className="btn-icon" title="Reset Password" onClick={() => setResetPasswordIntern(intern)}>🔑</button>
-                          <button className="btn-icon danger" onClick={() => { setSelectedIntern(intern); setModal('confirm-remove') }}>✕</button>
-                        </div>
-                      </div>
-                    )
-                  })}
+                      )
+                    })}
                 </div>
               </div>
             )}
@@ -1249,7 +1255,7 @@ export default function AdminDashboard({ user, onLogout }) {
                     <div className="intern-rows">
                       {soloTasks.length === 0 && <div style={{ padding: '48px 24px', textAlign: 'center', color: 'var(--muted)', fontSize: '0.8rem' }}>No solo tasks yet.</div>}
                       {soloTasks.map(task => {
-                        const intern   = interns.find(i => i.uid === task.internUid)
+                        const intern = interns.find(i => i.uid === task.internUid)
                         const expanded = expandedTaskId === task.id
                         return (
                           <div key={task.id}>
@@ -1296,7 +1302,7 @@ export default function AdminDashboard({ user, onLogout }) {
                     <div className="intern-rows">
                       {groupTasks.length === 0 && <div style={{ padding: '48px 24px', textAlign: 'center', color: 'var(--muted)', fontSize: '0.8rem' }}>No group tasks yet.</div>}
                       {groupTasks.map(task => {
-                        const leader  = interns.find(i => i.uid === task.leaderUid)
+                        const leader = interns.find(i => i.uid === task.leaderUid)
                         const members = (task.memberUids || []).map(uid => interns.find(i => i.uid === uid)).filter(Boolean)
                         const expanded = expandedTaskId === task.id
                         return (
@@ -1400,8 +1406,8 @@ export default function AdminDashboard({ user, onLogout }) {
 
                 {/* ── DEFAULT: Chronological log grouped by day ── */}
                 {!viewingAttendance && (() => {
-                  const availMonths = [...new Set(allLogs.map(l => l.date?.slice(0,7)).filter(Boolean))].sort((a,b) => b.localeCompare(a))
-                  const filtered    = allLogsMonth === 'all' ? allLogs : allLogs.filter(l => l.date?.startsWith(allLogsMonth))
+                  const availMonths = [...new Set(allLogs.map(l => l.date?.slice(0, 7)).filter(Boolean))].sort((a, b) => b.localeCompare(a))
+                  const filtered = allLogsMonth === 'all' ? allLogs : allLogs.filter(l => l.date?.startsWith(allLogsMonth))
 
                   // Group by date, sorted newest first
                   const byDate = {}
@@ -1417,7 +1423,7 @@ export default function AdminDashboard({ user, onLogout }) {
                       return at - bt
                     })
                   })
-                  const sortedDates = Object.keys(byDate).sort((a,b) => b.localeCompare(a))
+                  const sortedDates = Object.keys(byDate).sort((a, b) => b.localeCompare(a))
 
                   return (
                     <>
@@ -1439,7 +1445,7 @@ export default function AdminDashboard({ user, onLogout }) {
                         <div style={{ padding: '48px 24px', textAlign: 'center', color: 'var(--muted)', fontSize: '0.8rem' }}>No attendance records found.</div>
                       ) : sortedDates.map(date => {
                         const dateLabel = new Date(date + 'T00:00:00').toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' })
-                        const dayRecs   = byDate[date]
+                        const dayRecs = byDate[date]
                         return (
                           <div key={date}>
                             {/* Day header */}
@@ -1457,11 +1463,11 @@ export default function AdminDashboard({ user, onLogout }) {
                               <div className="intern-th">Status</div>
                             </div>
                             {dayRecs.map((rec, i) => {
-                              const intern     = interns.find(x => x.uid === rec.uid)
-                              const timeInStr  = rec.timeIn?.toDate  ? rec.timeIn.toDate().toLocaleTimeString('en-US',  { hour: '2-digit', minute: '2-digit', hour12: true }) : '—'
+                              const intern = interns.find(x => x.uid === rec.uid)
+                              const timeInStr = rec.timeIn?.toDate ? rec.timeIn.toDate().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true }) : '—'
                               const timeOutStr = rec.timeOut?.toDate ? rec.timeOut.toDate().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true }) : '—'
                               const incomplete = rec.timeIn && !rec.timeOut
-                              const sc         = shiftSettings[rec.shift]
+                              const sc = shiftSettings[rec.shift]
                               const scheduleStr = sc ? `${to12Hour(sc.start)} – ${to12Hour(sc.end)}` : (rec.shift || '—')
                               return (
                                 <div key={i} className={`intern-row ${incomplete ? 'row-incomplete' : ''}`}
@@ -1526,15 +1532,15 @@ export default function AdminDashboard({ user, onLogout }) {
                         const filteredLogs = selectedMonth === 'all' ? attendanceLogs : attendanceLogs.filter(l => l.date?.startsWith(selectedMonth))
                         if (filteredLogs.length === 0) return <div style={{ padding: '48px 24px', textAlign: 'center', color: 'var(--muted)', fontSize: '0.8rem' }}>No records found.</div>
                         return filteredLogs.map((log, i) => {
-                          const f           = formatLog(log)
-                          const incomplete  = log.timeIn && !log.timeOut
-                          const isOvertime  = (() => {
+                          const f = formatLog(log)
+                          const incomplete = log.timeIn && !log.timeOut
+                          const isOvertime = (() => {
                             if (!log.timeIn || !log.timeOut || !log.shift) return false
-                            const shiftCfg  = shiftSettings[log.shift]
+                            const shiftCfg = shiftSettings[log.shift]
                             if (!shiftCfg) return false
-                            const timeOutD  = log.timeOut.toDate()
-                            const [eh, em]  = shiftCfg.end.split(':').map(Number)
-                            const shiftEnd  = new Date(timeOutD)
+                            const timeOutD = log.timeOut.toDate()
+                            const [eh, em] = shiftCfg.end.split(':').map(Number)
+                            const shiftEnd = new Date(timeOutD)
                             shiftEnd.setHours(eh, em, 0, 0)
                             if (log.shift === 'gy' && eh < 12) shiftEnd.setDate(shiftEnd.getDate() + 1)
                             return timeOutD > shiftEnd
